@@ -1,0 +1,55 @@
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { BehaviorSubject, Observable, catchError, map } from 'rxjs';
+import { User } from '../../app/login-page/user';
+import { Account } from '../login-page/account';
+import { Topic } from '../Topic';
+import { Post } from '../PostEvent';
+import { Group } from '../Group';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ApiService {
+
+  private apiUrl = 'https://localhost:7136';
+
+  userAccount : Account | undefined;
+  private Isloged = new BehaviorSubject<string[]>([]);
+
+  currUsser = this.Isloged.asObservable();
+
+  logged(id:string, auth:string) {
+    this.Isloged.next([id, auth]);
+  }
+
+  private httpOptions = {
+  headers : new HttpHeaders({ 'Content-Type': 'application/json;charset=UTF-8',
+  }),
+  };
+
+  constructor(private http:HttpClient) { }
+
+  login(user : User){
+    let body = JSON.stringify(user);
+    console.log(body)
+    return this.http.post<Account>(`${this.apiUrl}/api/Auth/login`, body, this.httpOptions)
+  }
+
+  getTopic(){
+    return this.http.get<Topic[]>(`${this.apiUrl}/api/Topics`);
+  }
+
+  getPosts(){
+    return this.http.get<Post[]>(`${this.apiUrl}/api/Posts`);
+  }
+  
+  getGroup(){
+    return this.http.get<Group[]>(`${this.apiUrl}/api/Groups`);
+  }
+
+  addPost(val: any){
+    return this.http.post(`${this.apiUrl}/api/Posts`, val);
+  }
+
+}
