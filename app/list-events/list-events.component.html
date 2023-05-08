@@ -1,0 +1,106 @@
+<div class="header">
+    <div class="logo">
+        <img src ="/assets/img/logo.png">
+        <p>NEWS DC19 PROGRAM 1</p>
+    </div>
+    <div class="admin">
+        <img src="/assets/img/avatar.png">
+        <button mat-button [matMenuTriggerFor]="menu"></button>
+        <mat-menu #menu="matMenu" xPosition="before">
+            <button mat-menu-item routerLink="/group">Group</button>
+            <button mat-menu-item>Log out</button>
+        </mat-menu>
+
+    </div>
+</div>
+<div class="main-content-container">
+    <div class="add-post">
+        <p>List Event</p>
+        <button class="btn btn-primary" 
+        routerLink="/add-event">Add post</button>
+    </div>
+    <div class="search-events">
+        <form class="search">
+            <mat-form-field class="searchbar-form-field" appearance="standard">
+                <input 
+                    type="text" matInput 
+                    placeholder="What your post you want to Search?" 
+                    name= "search" 
+                    [(ngModel)]= "searchText">
+                <mat-icon class='search-icon' style ='color:#259CD7' matSuffix (click)="filterEvents(searchText)">search</mat-icon>            
+            </mat-form-field>
+            <p>Priority</p>
+        </form>
+        <div class="display-events">
+            <mat-list >
+                <mat-list-item *ngFor="let item of listPost | filter: searchText">
+                    <div class="events-container">
+                        <img src={{item.image}}>
+                        <div id="event-title" mat-line>{{item.title}}</div>
+                        <div id="event-content" mat-line>{{item.content}}</div>
+                        <div class="event-button">
+                            <button id="detail" onclick="window.location.href='';">
+                                Detail
+                            </button>
+                            <button id="edit" onclick="window.location.href='';">
+                                Edit
+                            </button>
+                            <button id="delete" type="button" class="deletebtn">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                    <div class="check-priority">
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </mat-list-item>
+                <mat-list-item *ngIf="(listPost | filter: searchText).length === 0">
+                    <mat-icon mat-list-avatar>error</mat-icon>
+                    <div mat-line>0 results</div>
+                    <div mat-line>No matching posts</div>
+                </mat-list-item>
+            </mat-list>
+        </div>
+        <div class="block-paginator">
+            <div class="paginator">
+              <div class="paginator-icon pag-prev" ><mat-icon>arrow_back_ios</mat-icon></div>
+              <div class="paginator-icon pag-next" ><mat-icon>arrow_forward_ios</mat-icon></div>
+              <div class="num-page-block">
+                <button class="num-page">1</button>
+                <button class="num-page">2</button>
+                <button class="num-page">3</button>
+                <button class="num-page">...</button>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="my-labels-container">
+    <p>MY LABELS</p>
+    <div class="my-labels">
+        <label id="news">News</label>
+        <label id="trade">Trading</label>
+        <label id="digital">Digital</label>
+        <label id="invest">Investing</label>
+        <div class="read-later">
+            <label>READ LATER</label>
+            <mat-icon>bookmark_border</mat-icon>
+        </div>
+        <div class="history">
+            <label>READ HISTORY</label>
+            <div><i class="bi bi-book"></i></div>
+        </div>
+    </div>
+</div>
+<div class="footer">
+    <p>Privacy Policy / Personal Information / Terms of Service</p>
+</div>
+
+
+
+  
+
+
