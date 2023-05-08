@@ -1,0 +1,100 @@
+<div class="header">
+    <div class="logo">
+        <img src ="/assets/img/logo.png">
+        <p>NEWS DC19 PROGRAM 1</p>
+    </div>
+    <div class="admin">
+        <img src="/assets/img/avatar.png" >
+        <button mat-button [matMenuTriggerFor]="menu"></button>
+        <mat-menu #menu="matMenu" xPosition="before">
+            <button mat-menu-item routerLink="/post">Posts</button>
+            <button mat-menu-item>Log out</button>
+        </mat-menu>
+    </div>
+</div>
+<div class="main-content-container">
+    <div class="add-group">
+        <p>List Group</p>
+        <button class="btn btn-primary" 
+        routerLink="/add-group">Add Group</button>
+    </div>
+    <div class="search-groups">
+        <form class="search">
+            <mat-form-field class="searchbar-form-field" appearance="standard">
+                <input type="text" matInput 
+                        placeholder="What your Group you want to Search" 
+                        name= "search" 
+                        [(ngModel)]= "searchText">
+                <mat-icon class='search-icon' style ='color:#259CD7' matSuffix (click)="filterGroups(searchText)">search</mat-icon>            
+            </mat-form-field>
+        </form>
+        <div class="display-groups">
+            <mat-list >
+                <mat-list-item *ngFor="let item of list | filter: searchText">
+                    <div class="groups-container">
+                        <div id="program" mat-line>{{item.name}}</div>
+                        <div class="group-content-container">
+                            <div id="group-events" mat-line>{{item.up_coming_events}} events coming soon</div><br>
+                            <div id="group-post" mat-line>{{item.post}} posts</div><br>
+                            <div id="group-last-event" mat-line>last event {{item.last_event}}</div>
+                        </div>
+                        <div class="group-button">
+                            <button id="detail" onclick="window.location.href='';">
+                                Detail
+                            </button>
+                            <button id="edit" onclick="window.location.href='';">
+                                Edit
+                            </button>
+                            <button id="delete" type="button" class="deletebtn">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </mat-list-item>
+                <mat-list-item *ngIf="(list | filter: searchText).length === 0">
+                    <mat-icon mat-list-avatar>error</mat-icon>
+                    <div mat-line>0 results</div>
+                    <div mat-line>No matching presidents</div>
+                </mat-list-item>
+            </mat-list>
+        </div>
+        <div class="block-paginator">
+            <div class="paginator">
+              <div class="paginator-icon pag-prev" ><mat-icon>arrow_back_ios</mat-icon></div>
+              <div class="paginator-icon pag-next" ><mat-icon>arrow_forward_ios</mat-icon></div>
+              <div class="num-page-block">
+                <button class="num-page">1</button>
+                <button class="num-page">2</button>
+                <button class="num-page">3</button>
+                <button class="num-page">...</button>
+              </div>
+            </div>
+        </div>
+    </div> 
+</div>
+<div class="my-labels-container">
+    <p>MY LABELS</p>
+    <div class="my-labels">
+        <label id="news">News</label>
+        <label id="trade">Trading</label>
+        <label id="digital">Digital</label>
+        <label id="invest">Investing</label>
+        <div class="read-later">
+            <label>READ LATER</label>
+            <mat-icon>bookmark_border</mat-icon>
+        </div>
+        <div class="history">
+            <label>READ HISTORY</label>
+            <mat-icon>import_contacts</mat-icon>
+        </div>
+    </div>
+</div>
+<div class="footer">
+    <p>Privacy Policy / Personal Information / Terms of Service</p>
+</div>
+
+
+
+  
+
+
