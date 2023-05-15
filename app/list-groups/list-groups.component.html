@@ -30,31 +30,26 @@
         </form>
         <div class="display-groups">
             <mat-list >
-                <mat-list-item *ngFor="let item of list | filter: searchText">
+                <mat-list-item *ngFor="let group of groups | filter: searchText">
                     <div class="groups-container">
-                        <div id="program" mat-line>{{item.name}}</div>
+                        <div id="program" mat-line>{{group.name}}</div>
                         <div class="group-content-container">
-                            <div id="group-events" mat-line>{{item.up_coming_events}} events coming soon</div><br>
-                            <div id="group-post" mat-line>{{item.post}} posts</div><br>
-                            <div id="group-last-event" mat-line>last event {{item.last_event}}</div>
+                            <div id="group-events" mat-line>{{group.upcoming}} events coming soon</div><br>
+                            <div id="group-post" mat-line>{{group.totalPost}} posts</div><br>
+                            <div id="group-last-event" mat-line>last event {{group.lastEvent | date:'dd/MM/yyyy '}}</div>
                         </div>
                         <div class="group-button">
-                            <button id="detail" onclick="window.location.href='';">
+                            <button id="detail" (click)="groupDetail(group?.id)">
                                 Detail
                             </button>
-                            <button id="edit" onclick="window.location.href='';">
+                            <button id="edit" (click)="editGroup(group?.id)">
                                 Edit
                             </button>
-                            <button id="delete" type="button" class="deletebtn">
+                            <button id="delete" type="button" class="deletebtn" (click)="deleteGroup(group.id)">
                                 Delete
                             </button>
                         </div>
                     </div>
-                </mat-list-item>
-                <mat-list-item *ngIf="(list | filter: searchText).length === 0">
-                    <mat-icon mat-list-avatar>error</mat-icon>
-                    <div mat-line>0 results</div>
-                    <div mat-line>No matching presidents</div>
                 </mat-list-item>
             </mat-list>
         </div>
