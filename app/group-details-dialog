@@ -1,0 +1,17 @@
+<h2 mat-dialog-title>Group Details</h2>
+
+<div class="group-container">
+    <button mat-button mat-dialog-close class="close">X</button>
+    <mat-dialog-content class="content-group">
+      <table class="group-details">
+        <tr>
+          <th>Group : </th>
+          <td>{{group.name}}</td>
+        </tr>
+        <tr>
+          <th>Mails : </th>
+          <td>{{group.mails}}</td>
+        </tr>
+      </table>
+    </mat-dialog-content>
+</div>
