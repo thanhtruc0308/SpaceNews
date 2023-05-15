@@ -1,56 +1,46 @@
-import { JsonPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/forms';
-import {ErrorStateMatcher} from '@angular/material/core';
-import { listGroup } from '../shared/list-of-groups';
+import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';import {ErrorStateMatcher} from '@angular/material/core';
+import { listGroup } from '../../shared/list-of-groups';
 import { HttpClient } from '@angular/common/http';
+import { Group } from 'src/app/Group';
+import { ApiService } from '../../Service/api.service';
+import { HandleGroupService } from 'src/app/Service/handle-group.service';
 
 @Component({
   selector: 'app-add-group',
   templateUrl: './add-group.component.html',
   styleUrls: ['./add-group.component.css']
 })
-export class AddGroupComponent {
-  
+export class AddGroupComponent implements OnInit{
+  addGroupForm = new FormGroup({
+    groupName: new FormControl(''),
+    groupMail: new FormControl(''),
+  });
 
-  added = false;
-  list = listGroup;
+  constructor(
+    private apiService: ApiService, 
+    private fb: FormBuilder,
+    private groupService: HandleGroupService) {}
 
-  groups: string[]=[];
-
-  addGroup(newGroup: string){
-    if(newGroup){
-      for (var i=0; i<=this.list.length; i++){
-        if(newGroup === this.list[i].name){
-          break
-        }else {
-          this.list[i].name = newGroup;
-          this.groups.push(newGroup);
-        }
-      }
-    }
-    window.alert('Group added successfully!')
+  ngOnInit(): void {
+    this.addGroupForm = this.fb.group({
+      groupName: ['', Validators.required],
+      groupMail: ['', Validators.required]
+    })
   }
-  
+
+  onSubmit(){
+    let data = Object(this.addGroupForm.value);
+    this.addGroupForm.reset();
+
+    this.groupService.addGroup(data).subscribe({
+      next:data=>{
+        alert('Success');
+      },
+      error:err=>{console.log(err)}
+    })
+  }
+
+
 }
 
-
-
-
-
-
-
-
-
-
-// export class MyErrorStateMatcher implements ErrorStateMatcher {
-//   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
-//     const isSubmitted = form && form.submitted;
-//     return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
-//   }
-// }
-// export class InputErrorStateMatcherExample {
-//   emailFormControl = new FormControl('', [Validators.required, Validators.email]);
-
-//   matcher = new MyErrorStateMatcher();
-// }
