@@ -1,0 +1,52 @@
+*{
+    --viewH : 100vh;
+    --viewW : 100vw;
+    --blue: #259CD7;
+    --grey : #F5F5F5;
+    --white : #FFFF;
+    --ratio : calc(var(--viewW)/1440);
+  }
+  .group-container{
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow-y: visible;
+    top: 0;
+  }
+  mat-dialog-content{
+    padding-bottom: 10px;
+    max-height: calc(var(--ratio)*500);
+    min-height: calc(var(--ratio)*200);
+    width: calc(var(--ratio)*500);
+    margin: 0 -12px;
+    background-color: white;
+    border-radius: 5px;
+  }
+  
+  .group-container .close{
+    position: absolute;
+    top: -22px;
+    right: 2px;
+    min-width: 50px;
+    height: 50px;
+    padding: 0;
+    border-radius: 100%;
+  }
+  table{
+    width: 100%;
+    height: calc(var(--ratio)*70);
+    text-align: left;
+    margin: 10px 0;
+  }
+
+  /* table tr{
+    margin-top: 5px;
+  } */
+  table th {
+    width: 50px;
+  }
+  table td {
+    width: 150px;
+    text-align: center;
+    display: inline-table;
+  }
