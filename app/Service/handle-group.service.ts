@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Group } from '../Group';
 
 interface formGroupData {
   groupName:'',
@@ -33,11 +34,28 @@ export class HandleGroupService {
   addGroup(obj : formGroupData){
     let newGroup = {
       name: obj.groupName,
-      mail: obj.groupMail
+      email: obj.groupMail
     };
     console.log(newGroup);
     return this.http.post(`${this.url}/api/Groups`, JSON.stringify(newGroup), this.httpOptions);
   }
+  searchGroup(keyWord='', pageIndex=0){
+    return this.http.get<Group[]>(`https://localhost:7136/api/Groups?keyword=${keyWord}&pageIndex=${pageIndex}&pageSize=6`);
+  }
+  loadListGroup(pageIndex = 0){
+    return this.http.get<Group[]>(`https://localhost:7136/api/Groups?pageIndex=${pageIndex}&pageSize=6`);
+  }
+  deleteGroup(val: number){
+    return this.http.delete(`${this.url}/api/Groups/${val}`);
+  }
+  editGroup(obj: formGroupData, Id: number){
+    let edittedGroup = {
+      name: obj.groupName,
+      email: obj.groupMail,
+      id: Id
+    };
+    return this.http.put<Group>(`${this.url}/api/Groups/${Id}`, edittedGroup);
 
+  }
 
 }
