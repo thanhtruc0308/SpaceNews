@@ -1,4 +1,4 @@
-<div class="header">
+<!-- <div class="header">
     <div class="logo">
         <img src ="/assets/img/logo.png">
         <p>NEWS DC19 PROGRAM 1</p>
@@ -11,41 +11,47 @@
             <button mat-menu-item>Log out</button>
         </mat-menu>
     </div>
-</div>
+</div> -->
 <div class="main-content-container">
     <div class="add-group">
         <p>List Group</p>
         <button class="btn btn-primary" 
         routerLink="/add-group">Add Group</button>
     </div>
-    <div class="search-groups">
-        <form class="search">
-            <mat-form-field class="searchbar-form-field" appearance="standard">
-                <input type="text" matInput 
-                        placeholder="What your Group you want to Search" 
-                        name= "search" 
-                        [(ngModel)]= "searchText">
-                <mat-icon class='search-icon' style ='color:#259CD7' matSuffix (click)="filterGroups(searchText)">search</mat-icon>            
-            </mat-form-field>
-        </form>
+    <div class="list-groups-container">
+        <div class="search-block">
+            <form class="search" [formGroup]="searchForm" autocomplete="off" (ngSubmit)="ClickBtn()">
+                <mat-form-field class="searchbar-form-field" appearance="standard">
+                    <input type="text" matInput 
+                            placeholder="What your Group you want to Search" 
+                            name= "search" 
+                            formControlName="keyWord">
+                    <button matSuffix mat-icon-button aria-label="Search" fontIcon="search" type="submit" style ='color:#259CD7'>
+                        <mat-icon *ngIf="!showSearch">search</mat-icon>
+                        <mat-icon *ngIf="showSearch">close</mat-icon>
+                    </button>      
+                </mat-form-field>
+            </form>
+        </div>
         <div class="display-groups">
+            <h4 class="no-results-found" [class.show]="!haveResults()">No results found</h4>
             <mat-list >
-                <mat-list-item *ngFor="let group of groups | filter: searchText">
-                    <div class="groups-container">
-                        <div id="program" mat-line>{{group.name}}</div>
+                <mat-list-item class="groups-container" *ngFor="let group of groups">
+                    <div class="group">
+                        <div class="program" mat-line>{{group.name}}</div>
                         <div class="group-content-container">
-                            <div id="group-events" mat-line>{{group.upcoming}} events coming soon</div><br>
-                            <div id="group-post" mat-line>{{group.totalPost}} posts</div><br>
-                            <div id="group-last-event" mat-line>last event {{group.lastEvent | date:'dd/MM/yyyy '}}</div>
+                            <div class="group-events" mat-line> events coming soon</div><br>
+                            <div class="group-post" mat-line> posts</div><br>
+                            <div class="group-last-event" mat-line>last event </div>
                         </div>
                         <div class="group-button">
-                            <button id="detail" (click)="groupDetail(group?.id)">
+                            <button class="detail" (click)="groupDetail(group.id)">
                                 Detail
                             </button>
-                            <button id="edit" (click)="editGroup(group?.id)">
+                            <button class="edit" (click)="editGroup(group.id)">
                                 Edit
                             </button>
-                            <button id="delete" type="button" class="deletebtn" (click)="deleteGroup(group.id)">
+                            <button class="delete" (click)="deleteGroup(group.id)">
                                 Delete
                             </button>
                         </div>
@@ -55,19 +61,71 @@
         </div>
         <div class="block-paginator">
             <div class="paginator">
-              <div class="paginator-icon pag-prev" ><mat-icon>arrow_back_ios</mat-icon></div>
-              <div class="paginator-icon pag-next" ><mat-icon>arrow_forward_ios</mat-icon></div>
-              <div class="num-page-block">
-                <button class="num-page">1</button>
-                <button class="num-page">2</button>
-                <button class="num-page">3</button>
+              <div class="paginator-icon pag-prev" (click)="pagePrev()"><mat-icon>arrow_back_ios</mat-icon></div>
+              <div class="paginator-icon pag-next" (click)="pageNext()"><mat-icon>arrow_forward_ios</mat-icon></div>
+              <!-- page 1 -->
+              <div class="num-page-block" *ngIf="pageIndex == 0" style="max-width: 340px;">
+                <button class="num-page checked" (click)="changePage(pageIndex)">1</button>
+                <button class="num-page" (click)="changePage(pageIndex+1)">2</button>
+                <button class="num-page" (click)="changePage(pageIndex+2)">3</button>
                 <button class="num-page">...</button>
               </div>
+              <!-- page 2 -->
+              <div class="num-page-block" *ngIf="pageIndex == 1" style="max-width: 410px;">
+                <button class="num-page" (click)="changePage(pageIndex-1)">{{pageIndex}}</button>
+                <button class="num-page checked" (click)="changePage(pageIndex)">{{pageIndex+1}}</button>
+                <button class="num-page" (click)="changePage(pageIndex+1)">{{pageIndex+2}}</button>
+                <button class="num-page" (click)="changePage(pageIndex+2)">{{pageIndex+3}}</button>
+                <button class="num-page">...</button>
+              </div>
+              <!-- page 3 -->
+              <div class="num-page-block" *ngIf="pageIndex == 2" style="max-width: 485px;">
+                <button class="num-page" (click)="changePage(pageIndex-2)">{{pageIndex-1}}</button>
+                <button class="num-page" (click)="changePage(pageIndex-1)">{{pageIndex}}</button>
+                <button class="num-page checked" (click)="changePage(pageIndex)">{{pageIndex+1}}</button>
+                <button class="num-page" (click)="changePage(pageIndex+1)">{{pageIndex+2}}</button>
+                <button class="num-page" (click)="changePage(pageIndex+2)">{{pageIndex+3}}</button>
+                <button class="num-page">...</button>
+              </div>
+              <!-- page > 3 -->
+              <div class="num-page-block" *ngIf="pageIndex >= 3 && pageIndex < 7">
+                <button class="num-page">...</button>
+                <button class="num-page" (click)="changePage(pageIndex-2)">{{pageIndex-1}}</button>
+                <button class="num-page" (click)="changePage(pageIndex-1)">{{pageIndex}}</button>
+                <button class="num-page checked" (click)="changePage(pageIndex)">{{pageIndex+1}}</button>
+                <button class="num-page" (click)="changePage(pageIndex+1)">{{pageIndex+2}}</button>
+                <button class="num-page" (click)="changePage(pageIndex+2)">{{pageIndex+3}}</button>
+                <button class="num-page">...</button>
+              </div>
+              <!-- limit 10 pages -->
+              <div class="num-page-block" *ngIf="pageIndex == 7" style="max-width: 485px;">
+                <button class="num-page">...</button>
+                <button class="num-page" (click)="changePage(pageIndex-2)">{{pageIndex-1}}</button>
+                <button class="num-page" (click)="changePage(pageIndex-1)">{{pageIndex}}</button>
+                <button class="num-page checked" (click)="changePage(pageIndex)">{{pageIndex+1}}</button>
+                <button class="num-page" (click)="changePage(pageIndex+1)">{{pageIndex+2}}</button>
+                <button class="num-page" (click)="changePage(pageIndex+2)">{{pageIndex+3}}</button>
+              </div>
+              <div class="num-page-block" *ngIf="pageIndex == 8" style="max-width: 410px;">
+                <button class="num-page">...</button>
+                <button class="num-page" (click)="changePage(pageIndex-2)">{{pageIndex-1}}</button>
+                <button class="num-page" (click)="changePage(pageIndex-1)">{{pageIndex}}</button>
+                <button class="num-page checked" (click)="changePage(pageIndex)">{{pageIndex+1}}</button>
+                <button class="num-page" (click)="changePage(pageIndex+1)">{{pageIndex+2}}</button>
+              </div>
+              <div class="num-page-block" *ngIf="pageIndex == 9" style="max-width: 340px;">
+                <button class="num-page">...</button>
+                <button class="num-page" (click)="changePage(pageIndex-2)">{{pageIndex-1}}</button>
+                <button class="num-page" (click)="changePage(pageIndex-1)">{{pageIndex}}</button>
+                <button class="num-page checked" (click)="changePage(pageIndex)">{{pageIndex+1}}</button>
+              </div>
             </div>
+          </div>
         </div>
-    </div> 
+    
+   
 </div>
-<div class="my-labels-container">
+<!-- <div class="my-labels-container">
     <p>MY LABELS</p>
     <div class="my-labels">
         <label id="news">News</label>
@@ -83,7 +141,7 @@
             <mat-icon>import_contacts</mat-icon>
         </div>
     </div>
-</div>
+</div> -->
 <div class="footer">
     <p>Privacy Policy / Personal Information / Terms of Service</p>
 </div>
