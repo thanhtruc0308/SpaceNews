@@ -8,6 +8,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Post } from 'src/app/PostEvent';
 import { Member } from 'src/app/Member';
 import { HandlePostService } from 'src/app/Service/handle-post.service';
+import { GroupMembers } from 'src/app/GroupMembers';
 
 interface User{
   id : string|null,
@@ -180,12 +181,15 @@ export class GroupDetailsDialog implements OnInit {
 
   // keyWordOrigin : string |undefined;
   listPost : Post[] = [];
-
+  listMember : GroupMembers[] = [];
+  members: Member[] = [];
+  
 
 
   ngOnInit(): void{
     // this.getListPost();
-    this.getPost();
+    // this.getPost();
+    this.getMember();
     console.log(this.group);
     // this.upcommingPost.forEach((p)=>this.posts.unshift(p))
   }
@@ -217,6 +221,16 @@ export class GroupDetailsDialog implements OnInit {
     this.apiService.getListPosts(id).subscribe({
       next:data=>{
         this.listPost = data;
+      }
+    })
+  }
+
+  getMember(){
+    let id = this.data.id;
+    this.groupService.getMembersofGroups(id).subscribe({
+      next:data=>{
+        this.listMember = data;
+        console.log(this.listMember);
       }
     })
   }
