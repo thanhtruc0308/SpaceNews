@@ -7,6 +7,7 @@ import { HandleGroupService } from '../../Service/handle-group.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Post } from 'src/app/PostEvent';
 import { Member } from 'src/app/Member';
+import { HandlePostService } from 'src/app/Service/handle-post.service';
 
 interface User{
   id : string|null,
@@ -27,6 +28,7 @@ export class ListGroupsComponent implements OnInit{
   });
   members: Member[] = [];
   groups: Group[] = [];
+  listPost: Post[] = [];
   showSearch = false;
   searchResults: Group[] = [];
   keyWord : string|undefined = '';
@@ -37,7 +39,7 @@ export class ListGroupsComponent implements OnInit{
   }
 
   
-  constructor(private groupService: HandleGroupService, private fb: FormBuilder, public dialog: MatDialog) { }
+  constructor(private groupService: HandleGroupService, private fb: FormBuilder, private apiService: ApiService, public dialog: MatDialog) { }
   ngOnInit(): void {
     this.searchForm = this.fb.group({
       keyWord:""
@@ -163,7 +165,8 @@ export class GroupDetailsDialog implements OnInit {
     public dialogRef: MatDialogRef<GroupDetailsDialog>,
     @Inject(MAT_DIALOG_DATA) public data: Group,
     private groupService : HandleGroupService,
-    private apiService:ApiService
+    private apiService:ApiService,
+    private postService: HandlePostService
   ) {}
   group = this.data;
 
@@ -181,10 +184,9 @@ export class GroupDetailsDialog implements OnInit {
 
 
   ngOnInit(): void{
-    // if(sessionStorage.getItem('userID')) this.isAdmin = true;
-    this.getListPost();
-    console.log(this.data);
-    this.posts = this.listPost;
+    // this.getListPost();
+    this.getPost();
+    console.log(this.group);
     // this.upcommingPost.forEach((p)=>this.posts.unshift(p))
   }
 
@@ -210,18 +212,15 @@ export class GroupDetailsDialog implements OnInit {
   //   }
   // }
 
-  getListPost(){
+  getPost(){
     let id = this.data.id;
-     
-    this.apiService.getPosts(id, this.pageIndex).subscribe({
-      next:data => {
-        this.posts = data;
-        console.log(data);
-        this.handlePosts();
+    this.apiService.getListPosts(id).subscribe({
+      next:data=>{
+        this.listPost = data;
       }
     })
-    
   }
+  
 
   handlePosts(){
     let currDate = new Date();
