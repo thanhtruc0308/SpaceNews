@@ -1,129 +1,99 @@
-import { AfterViewInit, Component, EventEmitter, Inject, Input, OnInit, Output, ViewChild } from '@angular/core';;
-import { listGroup } from '../shared/list-of-groups';
-import { ApiService } from '../Service/api.service';
-import { Group } from '../Group';
-import { Post } from '../PostEvent';
-import { HttpClient } from '@angular/common/http';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
-import { animate, state, style, transition, trigger} from '@angular/animations';
-import { ListGroup } from '../ListGroup';
+import { Component, EventEmitter, Inject, Input, OnInit, Output, SimpleChanges } from '@angular/core';;
+import { ApiService } from '../../Service/api.service';
+import { Group } from '../../Group';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatDialogConfig } from '@angular/material/dialog';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { HandleGroupService } from '../Service/handle-group.service';
+import { HandleGroupService } from '../../Service/handle-group.service';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Post } from 'src/app/PostEvent';
+import { Member } from 'src/app/Member';
 
-
+interface User{
+  id : string|null,
+  auth_token : string |null,
+}
 @Component({
   selector: 'app-list-groups',
   templateUrl: './list-groups.component.html',
-  styleUrls: ['./list-groups.component.css'],
-  animations: [
-    trigger('detailExpand', [
-      state('collapsed', style({height: '0px', minHeight: '0'})),
-      state('expanded', style({height: '*'})),
-      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
-    ]),
-  ],
+  styleUrls: ['./list-groups.component.css']
 })
 
-export class ListGroupsComponent implements OnInit, AfterViewInit{
-  @Input() pageIndex = 0;
-  @Input() keyWord : string|undefined;
-  @Output() changePage = new EventEmitter();
-
-  keyWordOrigin : string |undefined;
-  list: ListGroup[] = [];
+export class ListGroupsComponent implements OnInit{
+  pageIndex = 0;
+  menuShow = false;
+  
+  searchForm = new FormGroup({
+    keyWord : new FormControl<string>("")
+  });
+  members: Member[] = [];
   groups: Group[] = [];
-  listPost: Post[] = [];
+  showSearch = false;
+  searchResults: Group[] = [];
+  keyWord : string|undefined = '';
 
-  searchText = '';
-  public dataSource: MatTableDataSource<any>=new MatTableDataSource<Group>()
-  @ViewChild (MatSort) sort!: MatSort;
-  constructor(private apiService: ApiService, public dialog: MatDialog) { }
+  user : User = {
+    id : '',
+    auth_token : ''
+  }
+
+  
+  constructor(private groupService: HandleGroupService, private fb: FormBuilder, public dialog: MatDialog) { }
   ngOnInit(): void {
+    this.searchForm = this.fb.group({
+      keyWord:""
+    })
     this.getListGroups();
-    // this.getListPost();
-    // this.totalPost();
+    // this.getListMembers();
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
+ 
+  //search groups
+  ClickBtn(){
+    this.pageIndex = 0;
+    if(this.showSearch == false){ // search icon
+      let key = this.searchForm.get('keyWord')?.value?.trim();
+      key = key?.replace(/ /g,'%20');
+      this.keyWord = key;
+      this.showSearch = true;
+      this.groupService.searchGroup(key, this.pageIndex).subscribe({
+        next:data =>{
+          this.groups = data;
+          console.log(data);
+        }
+      });
+    }
+    else{ // close icon
+      this.searchForm.reset({keyWord: ''});
+      this.showSearch = false;
+      this.getListGroups();
+    }
   }
+
+  // getListMembers(){
+  //   this.groups.forEach(p => p.id{
+      
+  //   })
+  // }
 
   getListGroups() {
-    this.apiService.getGroup().subscribe({
-      next:data=>{
-        this.groups = data;
-        // this.handleGroup();
-        console.log(this.groups);
-      }
-    })
-  }
-
-
-  // handleGroup(){
-  //   let name: string;
-  //   let upcoming: number; 
-  //   let totalPost: number;
-  //   let lastEvent = new Date(); 
-  //   this.groups.forEach(p=>{
-  //     name = p.name;
-  //     // totalPost = this.totalPost(p.id);
-  //     upcoming = 3;
-  //     this.list.push({name, upcoming, totalPost, lastEvent});
-  //   })
+    if(this.showSearch == true){
+      this.groupService.searchGroup(this.keyWord, this.pageIndex).subscribe({
+        next:data =>{
+          this.groups = data;
+        }
+      });
+    }
+    else{
+      this.groupService.loadListGroup(this.pageIndex).subscribe({
+        next:data=>{
+          this.groups = data;
+          // this.handleGroup();
+          console.log(this.groups);
+        }
+      })
+    }
     
-    
-  // }
-
-  filterGroups(searchText: string){
-    this.dataSource.filter = searchText.trim().toLocaleLowerCase();
-    const filterValue = searchText;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
-
-  onMatSortChange() {
-    this.dataSource.sort = this.sort;
-  }
-
-  upcomingEvents(){
-
-  }
-
-  // totalPost(id: number){
-  //   let countPost: Post[] = [];
-  //   let total: number = 0;
-  //   let post: Post;
-
-  //   // for(var i=0; i<=this.listGroups.length; i++){
-  //   //   if(i===id){
-  //   //     for(var j=0; j<=this.listPost.length; j++){
-  //   //       post = this.listPost[j];
-  //   //       console.log(this.listPost[j]);
-  //   //       if(i===post.group.id){
-  //   //         countPost.push(post);
-  //   //       }
-  //   //     }
-
-  //   //   }
-  //   // }
-    
-  //   this.groups.forEach(g=>{
-  //     if(g.id===id){
-  //       // console.log(g);
-  //       this.listPost.forEach(p=>{
-  //         // console.log(p);
-  //         if(g.id===p.group.id){
-  //           countPost.push(p);
-  //           // console.log(p);
-  //         }
-  //       })
-  //     }
-  //   })
-  //   // console.log(countPost.length);
-  //   return countPost.length;   
-  // }
-  
 
   //handle detail-btn
   groupDetail(id:number){
@@ -137,6 +107,7 @@ export class ListGroupsComponent implements OnInit, AfterViewInit{
   //handle edit-btn
   editGroup(id:number){
     let group = this.groups.find(p => p.id == id);
+    // console.log(group?.id);
     const dialogRef = this.dialog.open(GroupEditDialog, {
       data : group
     });
@@ -144,10 +115,35 @@ export class ListGroupsComponent implements OnInit, AfterViewInit{
 
   //handle delete-btn
   deleteGroup(id:number){
-    this.apiService.deleteGroup(id).subscribe(group =>{
+    this.groupService.deleteGroup(id).subscribe(group =>{
       this.getListGroups();
     });
     // console.log(id)
+  }
+  // handle page number
+  changePage(value:number){
+    this.pageIndex = value;
+    this.getListGroups();
+  }
+  pagePrev(){
+    if(this.pageIndex > 0)this.pageIndex -= 1;
+    else return;
+    this.getListGroups();
+  }
+  pageNext(){
+    if(this.pageIndex < 9)this.pageIndex += 1;
+    else return;
+    this.getListGroups();
+  }
+
+  haveResults(){
+    if(this.groups.length == 0){
+      // console.log(this.groups.length);
+      return false;
+    } 
+    else{
+      // console.log(this.groups.length);
+    } return true;
   }
 
 }
@@ -157,16 +153,119 @@ export class ListGroupsComponent implements OnInit, AfterViewInit{
   styleUrls: ['../group-details-dialog/group-details-dialog.css']
 })
 export class GroupDetailsDialog implements OnInit {
+  // @Input() topicChecked = 0;
+  @Input() pageIndex = 0;
+  // @Input() keyWord : string|undefined;
+  @Output() changePage = new EventEmitter();
+  // @Output() topicChange = new EventEmitter();
+
   constructor(
     public dialogRef: MatDialogRef<GroupDetailsDialog>,
     @Inject(MAT_DIALOG_DATA) public data: Group,
-    private apiService : ApiService
+    private groupService : HandleGroupService,
+    private apiService:ApiService
   ) {}
   group = this.data;
-  ngOnInit(): void {
+
+
+
+  isAdmin = true;
+
+  posts : Post[] = [];//will show
+  onWeek: Post[] = [];// <= 7days
+  upcomming : Post[] = [];// <= 3days
+
+  // keyWordOrigin : string |undefined;
+  listPost : Post[] = [];
+
+
+
+  ngOnInit(): void{
+    // if(sessionStorage.getItem('userID')) this.isAdmin = true;
+    this.getListPost();
+    console.log(this.data);
+    this.posts = this.listPost;
+    // this.upcommingPost.forEach((p)=>this.posts.unshift(p))
+  }
+
+  // ngOnChanges(changes: SimpleChanges): void {
+  //   if ('topicChecked' in changes){
+  //     const topic = Number(changes['topicChecked'].currentValue);
+  //       this.pageIndex = 0;
+  //       this.changePage.emit(this.pageIndex);
+  //       // const topic = Number(changes['topicChecked'].currentValue);
+  //       // this.topicChecked = topic;
+  //       this.apiService.stopSearch();
+  //       this.ChangeTopic(topic);
+  //     // if('pageIndex'in changes){
+  //     //   this.getListPost(topic, this.pageIndex);
+  //     // }else this.getListPost(topic, 0);
+  //   }
+  //   else if('pageIndex' in changes){
+  //     if(this.keyWord){
+  //       this.getListPost(this.topicChecked, this.pageIndex, this.keyWord)
+  //     }
+  //       else {
+  //         this.getListPost(this.topicChecked, this.pageIndex, '');}
+  //   }
+  // }
+
+  getListPost(){
+    let id = this.data.id;
+     
+    this.apiService.getPosts(id, this.pageIndex).subscribe({
+      next:data => {
+        this.posts = data;
+        console.log(data);
+        this.handlePosts();
+      }
+    })
     
   }
+
+  handlePosts(){
+    let currDate = new Date();
+    let t = currDate.getTime();
+
+    // onWeek list
+    // 259200000 ms = 72h = 3days
+    // 345600000 ms = 96h = 4days
+    // 345599999 ms = 96h - 1s = 4days - 1s
+    // 604800000 ms = 168h = 7days
+    // 691199000 ma = ... = 8days -1s
+    this.posts.forEach((p)=>{
+      let x = new Date(p.time);
+      if(x.getTime() - t <= 604800000 && x.getTime() - t >= -36399000){
+        if(x.getTime() - t <= 259200000) this.upcomming.push(p)
+        else this.onWeek.push(p);
+      }
+    })
+
+  }
+
+  isUpcomming(id : number){
+    if(this.upcomming.find(p=>p.id == id)) return true;
+    else return false;
+  }
+  isOnWeek(id : number){
+    if(this.onWeek.find(p => p.id == id)) return true;
+    else return false;
+  }
+
+
+  // ChangeTopic(id:number){
+  //   // this.changePage.emit(this.pageIndex);
+  //   this.getListPost(id);
+  // }
+
+  // favourite
+  isFavourite = false;
+  starClick(id : number){
+    this.isFavourite = !this.isFavourite;
+
+  }
 }
+
 
 @Component({
   selector: 'group-edit-dialog',
@@ -174,16 +273,17 @@ export class GroupDetailsDialog implements OnInit {
   styleUrls: ['../group-edit-dialog/group-edit-dialog.css']
 })
 export class GroupEditDialog implements OnInit{
-  editGroupForm = new FormGroup({
-    groupName: new FormControl(''),
-    groupMail: new FormControl(''),
-  });
+  // editGroupForm = new FormGroup({
+  //   groupName: new FormControl('', Validators.required),
+  //   groupMail: new FormControl('', Validators.required),
+  // });
 
   constructor(
     public dialogRef: MatDialogRef<GroupEditDialog>,
     private fb: FormBuilder,
-    private apiService: ApiService,
     private groupService: HandleGroupService,
+    private router: Router,
+    private apiService: ApiService,
     @Inject(MAT_DIALOG_DATA) public data: Group,
     
   ) {}
@@ -191,24 +291,31 @@ export class GroupEditDialog implements OnInit{
 
   group = this.data;
   ngOnInit(): void {
-    this.editGroupForm = this.fb.group({
-      groupName: ['', Validators.required],
-      groupMail: ['', Validators.required]
-    })
+    // this.groupID = this.group.id;
+    this.LoadGroup(this.group.id);
+    // this.updateGroup()
+    console.log(this.group);
   }
+  LoadGroup(id:number){
+    this.apiService.getGroup(id).subscribe({
+      next: data =>{
+        console.log(data);
+        // this.editGroupForm.setValue({
+        //   groupName: data.groupName,
+        //   groupMail: data.email})
+      }        
+    })      
+  }
+
   onSubmit(){
-    let data = Object(this.editGroupForm.value);
-    this.editGroupForm.reset();
-
-    //delete the old group
-    // this.apiService.deleteGroup(data).subscribe();
-
-    //add editted group
-    this.groupService.addGroup(data).subscribe({
-      next:data=>{
-        alert('Success');
-      },
-      error:err=>{console.log(err)}
-    })
+    // let data = Object(this.editGroupForm.value);
+    // this.editGroupForm.reset();
+    // this.groupService.editGroup(data, this.group.id).subscribe({
+    //   next:data=>{
+    //     alert('Saved Change');
+    //   },
+    //   error:err=>{console.log(err)}
+    // })
+    // this.router.navigateByUrl('/group')
   }
 }
