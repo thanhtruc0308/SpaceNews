@@ -1,86 +1,70 @@
-<div class="logo">
+<div>
+  <div class="logo">
     <img src ="/assets/img/logo.png"  width="150.81px" height="68px">
     <p>NEWS DC19 PROGRAM 1</p>
 </div>
-<div class="add-group-title">
+<div class="add-group-form">
   <h3>Add Group</h3>
-</div>
   <div class="home-content-container">
-    <!-- <div> -->
-      <form class="add-group-form" autocomplete="on" (ngSubmit)="onSubmit()" [formGroup]="addGroupForm">
-        <div class="name">
-          <label for="name">Group Name</label>
-          <input type="text" id="name"
-          required
-          formControlName="groupName"
-          >
-        </div>
-      <!-- </form> -->
-      <form class="add-member-form" autocomplete="on" [formGroup]="addgroupMember">
-        <div class = "member">
-          <label for="member">Members </label>
-          <!-- <textarea class="input-field" type="text" id="member"
-            autocomplete="auto"
-            required
-            formControlName="groupMail"></textarea>  -->
-              
-            
-            <!-- <mat-icon matSuffix>mail_outline</mat-icon> -->
-          <table>
-            <thead>
+      <form class="add-group-form" autocomplete="off" [formGroup]="addGroupForm" ngNativeValidate (keydown.enter)="$event.preventDefault()">
+        <table style="border:none">
+          <tr class="row-control">
+            <td class="td-left">
+              <label for="name" class="name">Group Name</label>
+            </td>
+            <td class="td-right">
+              <input type="text" list="group-name" class="set-height" id="name" formControlName="groupName"  style="text-transform: capitalize;">
+              <datalist id="group-name">
+                <option *ngFor="let group of groups" [value]="group.name">{{group.name}}</option>
+              </datalist>
+            </td>
+          </tr>
+          <tr class="row-control">
+            <td class="td-left2">
+              <label for="member">Members </label>
+            </td>
+            <td class="td-right">
+              <thead>
                 <tr>
                   <td class="label"><label for="memberName">Name</label></td>
                   <td class="label"><label for="memberMail">Email </label></td>
-                  <!-- <td><button> Remove </button></td> -->
                 </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let mem of members">
-                  <td>{{mem.name}}</td>
-                  <td>{{mem.email}}</td>
-                </tr>
+              </thead>
+              <tbody>
                 <td class="input">
-                  <input type="text" id="memberName"
+                  <input type="text" id="memberName" list="member-name"
                     required
                     formControlName="memberName">
+                  <datalist id="member-name">
+                    <option *ngFor="let member of allMembers" [value]="member.name">{{member.name}}</option>
+                  </datalist>
                 </td>
-                <td class="input"><input type="text" id="memberMail"
+                <td class="input">
+                  <input type="text" id="memberMail" list="member-email"
                     required
-                    formControlName="memberMail"></td>
-                <td><button (click)="addHandler()"> Add </button></td>
-                <!-- <td>
-                <mat-form-field class="example-full-width" style="width: 100%">
-                  <mat-chip-list #chipList>
-                    <mat-chip style="margin-top:0.4em;" *ngFor="let option of searchOption" (removed)="removeOption(option)">
-                
-                      <span>{{option.name}}</span>
-                      
-                      <mat-icon matChipRemove>cancel</mat-icon>
-                    </mat-chip>
-                    <input #autocompleteInput type="text" placeholder="Enter Name" aria-label="Number" matInput [formGroup]="addgroupMember"
-                      [matAutocomplete]="auto" [matChipInputFor]="chipList">
-                    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-                      <mat-option *ngFor="let option of autoCompleteList" [value]="option" (onSelectionChange)="filterMemberList($event)">
-                        {{option.name}}
-                      </mat-option>
-                    </mat-autocomplete>
-                  </mat-chip-list>
-                
-                </mat-form-field>
-              </td> -->
-        
-            </tbody>
-          </table>
-        </div>
-      </form>
-        <button 
-            id="submit"
-            type="submit" 
-            class="submit-btn"
-          >Add Now
-        </button>
+                    formControlName="memberMail">
+                  <datalist id="member-email">
+                    <option *ngFor="let member of allMembers" [value]="member.email">{{member.email}}</option>
+                  </datalist>
+                </td>
+                <td><button (click)="addHandler()" id="add">+</button></td>
+                <tr *ngFor="let mem of members">
+                  <td>{{mem.name}}</td>
+                  <td>{{mem.email}}</td></tr>
+              </tbody>
+            </td>
+          </tr>
+          <tr class="row-control">
+            <td class="td-left"></td>
+            <td class="td-right" style="text-align: right;">
+              <div style="height: 24px;"></div>
+              <div class="submit-btn">
+                <button type="submit" id="submit" (click)="onSubmit()">Add now</button>
+              </div>
+            </td>
+          </tr>
+  
+        </table>
       </form>
   </div>
-
-  
-  
+</div>
