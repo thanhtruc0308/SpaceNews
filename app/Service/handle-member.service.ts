@@ -5,16 +5,17 @@ import { Group } from '../Group';
 import { GroupMembers } from '../GroupMembers';
 import { Member } from '../Member';
 
-interface formGroupData {
-  groupName:'',
-  // groupMail:'',
+interface formMember {
+  memberName: '',
+  memberMail: ''
 }
 
 @Injectable({
   providedIn: 'root'
 })
-export class HandleGroupService {
-  constructor(private apiService:ApiService, private http:HttpClient) { }
+export class HandleMemberService {
+
+  constructor(private http:HttpClient) { }
   auth = sessionStorage.getItem('auth_token');
   private httpOptions = {
     //   // headers : new HttpHeaders({'accept':'*/*', 'Content-Type': 'application/json'})
@@ -30,45 +31,20 @@ export class HandleGroupService {
 
   url = 'https://localhost:7136';
 
-  searchOption: Member[] = [];
-  // memberData: Member[]
-
-  addGroup(obj : formGroupData, indx: string){
-    let newGroup = {
-      name: obj.groupName,
-      memberID: indx
+  addMember(obj: Member){
+    let newMember = {
+      name: obj.name,
+      email: obj.email
     };
-
-    return this.http.post(`${this.url}/api/GroupMembers`, JSON.stringify(newGroup), this.httpOptions);
+    return this.http.post(`${this.url}/api/Members`, JSON.stringify(newMember), this.httpOptions);
   }
-  searchGroup(keyWord='', pageIndex: number){
-    return this.http.get<GroupMembers[]>(`${this.url}/api/GroupMembers?keyword=${keyWord}&pageIndex=${pageIndex}&pageSize=6`);
+  searchMembers(keyword=''){
+    return this.http.get<Member[]>(`${this.url}/api/Members?keyword=${keyword}`);
   }
-  loadListGroup(pageIndex = 0){
-    return this.http.get<GroupMembers[]>(`${this.url}/api/GroupMembers?pageIndex=${pageIndex}&pageSize=6`);
+  getMembers(){
+    return this.http.get<Member[]>(`${this.url}/api/Members`);
   }
-  loadAllGroups(){
-    return this.http.get<GroupMembers[]>(`${this.url}/api/GroupMembers?pageIndex=0&pageSize=9999`);
+  getMember(id: Number){
+    return this.http.get<Member>(`${this.url}/api/Members/${id}`);
   }
-  deleteGroup(val: number){
-    return this.http.delete(`${this.url}/api/GroupMembers/${val}`);
-  }
-  editGroup(obj: formGroupData, indx: string, Id: number){
-    let edittedGroup = {
-      name: obj.groupName,
-      memberID: indx,
-      id: Id
-    };
-    return this.http.put<GroupMembers>(`${this.url}/api/GroupMembers/${Id}`, edittedGroup);
-
-  }
-  getMembersofGroups(groupId: number){
-    return this.http.get<GroupMembers[]>(`${this.url}/api/GroupMembers/${groupId}`)
-  }
-  getGroup(id:number){
-    return this.http.get<GroupMembers>(`${this.url}/api/GroupMembers?/${id}`);
-  }
-
-  
-
 }
